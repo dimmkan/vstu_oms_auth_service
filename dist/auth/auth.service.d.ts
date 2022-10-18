@@ -10,6 +10,6 @@ export declare class AuthService {
     } | PromiseLike<{
         id: any;
     }>;
-    confirm(dto: AuthConfirm.Request): import('../contracts/auth/confirm').AuthConfirm.Response | PromiseLike<import('../contracts/auth/confirm').AuthConfirm.Response>;
+    confirm(dto: AuthConfirm.Request): Promise<AuthConfirm.Response>;
     register(dto: AuthRegister.Request): import('../contracts/auth/register').AuthRegister.Response | PromiseLike<import('../contracts/auth/register').AuthRegister.Response>;
 }

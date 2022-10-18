@@ -20,12 +20,10 @@ export class AuthService {
   ): { id: any } | PromiseLike<{ id: any }> {
     throw new Error('Method not implemented.');
   }
-  confirm(
-    dto: AuthConfirm.Request,
-  ):
-    | import('../contracts/auth/confirm').AuthConfirm.Response
-    | PromiseLike<import('../contracts/auth/confirm').AuthConfirm.Response> {
-    throw new Error('Method not implemented.');
+  confirm(dto: AuthConfirm.Request): Promise<AuthConfirm.Response> {
+    return new Promise((resolve) =>
+      resolve({ access_token: dto.confirm_code }),
+    );
   }
   register(
     dto: AuthRegister.Request,

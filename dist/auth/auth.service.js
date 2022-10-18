@@ -23,7 +23,7 @@ let AuthService = class AuthService {
         throw new Error('Method not implemented.');
     }
     confirm(dto) {
-        throw new Error('Method not implemented.');
+        return new Promise((resolve) => resolve({ access_token: dto.confirm_code }));
     }
     register(dto) {
         throw new Error('Method not implemented.');
