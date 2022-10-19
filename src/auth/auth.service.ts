@@ -6,12 +6,16 @@ import { AuthRegister } from 'src/contracts/auth/register';
 import { Directus } from '@directus/sdk';
 import { RMQError } from 'nestjs-rmq';
 import { ERROR_TYPE } from 'nestjs-rmq/dist/constants';
-import random from 'random';
+import randomNumber = require("random-number");
+import { MailerService } from 'src/mailer/mailer.service';
 
 @Injectable()
 export class AuthService {
   directus: any;
-  constructor(private readonly jwtService: JwtService) {
+  constructor(
+    private readonly jwtService: JwtService, 
+    private readonly mailerService: MailerService
+    ) {
     this.directus = new Directus(process.env.DIRECTUS_HOST, {
       auth: {
         staticToken: process.env.ADMIN_API_KEY, // If you want to use a static token, otherwise check below how you can use email and password.
@@ -75,12 +79,18 @@ export class AuthService {
       throw new RMQError('Пользователь с таким E-mail уже существует!', ERROR_TYPE.RMQ, 400);
     }
 
+    const createdToken = randomNumber({
+      min:  100000, 
+      max:  999999,
+      integer: true
+    }).toString();
+
     await confirm_tokens.createOne({
-      token: random.int(100000, 999999),
+      token: createdToken,
       payload: JSON.stringify(dto),
     });
 
-    //TODO: Send confirm email
+    await this.mailerService.sendConfirmation(createdToken, dto.email)
 
     return { success: true };
   }

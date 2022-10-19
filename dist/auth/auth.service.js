@@ -15,10 +15,12 @@ const jwt_1 = require("@nestjs/jwt");
 const sdk_1 = require("@directus/sdk");
 const nestjs_rmq_1 = require("nestjs-rmq");
 const constants_1 = require("nestjs-rmq/dist/constants");
-const random_1 = require("random");
+const randomNumber = require("random-number");
+const mailer_service_1 = require("../mailer/mailer.service");
 let AuthService = class AuthService {
-    constructor(jwtService) {
+    constructor(jwtService, mailerService) {
         this.jwtService = jwtService;
+        this.mailerService = mailerService;
         this.directus = new sdk_1.Directus(process.env.DIRECTUS_HOST, {
             auth: {
                 staticToken: process.env.ADMIN_API_KEY,
@@ -64,16 +66,23 @@ let AuthService = class AuthService {
         if (userAlreadyExist) {
             throw new nestjs_rmq_1.RMQError('Пользователь с таким E-mail уже существует!', constants_1.ERROR_TYPE.RMQ, 400);
         }
+        const createdToken = randomNumber({
+            min: 100000,
+            max: 999999,
+            integer: true
+        }).toString();
         await confirm_tokens.createOne({
-            token: random_1.default.int(100000, 999999),
+            token: createdToken,
             payload: JSON.stringify(dto),
         });
+        await this.mailerService.sendConfirmation(createdToken, dto.email);
         return { success: true };
     }
 };
 AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [jwt_1.JwtService])
+    __metadata("design:paramtypes", [jwt_1.JwtService,
+        mailer_service_1.MailerService])
 ], AuthService);
 exports.AuthService = AuthService;
 //# sourceMappingURL=auth.service.js.map

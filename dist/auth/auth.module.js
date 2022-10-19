@@ -10,13 +10,14 @@ exports.AuthModule = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const jwt_config_1 = require("../configs/jwt.config");
+const mailer_module_1 = require("../mailer/mailer.module");
 const auth_controller_1 = require("./auth.controller");
 const auth_service_1 = require("./auth.service");
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
     (0, common_1.Module)({
-        imports: [jwt_1.JwtModule.registerAsync((0, jwt_config_1.getJWTConfig)())],
+        imports: [jwt_1.JwtModule.registerAsync((0, jwt_config_1.getJWTConfig)()), mailer_module_1.MailerModule],
         controllers: [auth_controller_1.AuthController],
         providers: [auth_service_1.AuthService],
     })

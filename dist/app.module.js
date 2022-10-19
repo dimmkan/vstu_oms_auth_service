@@ -16,6 +16,7 @@ const app_service_1 = require("./app.service");
 const auth_module_1 = require("./auth/auth.module");
 const jwt_config_1 = require("./configs/jwt.config");
 const rmq_config_1 = require("./configs/rmq.config");
+const mailer_module_1 = require("./mailer/mailer.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -25,6 +26,7 @@ AppModule = __decorate([
             auth_module_1.AuthModule,
             nestjs_rmq_1.RMQModule.forRootAsync((0, rmq_config_1.getRMQConfig)()),
             jwt_1.JwtModule.registerAsync((0, jwt_config_1.getJWTConfig)()),
+            mailer_module_1.MailerModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

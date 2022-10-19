@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { getJWTConfig } from './configs/jwt.config';
 import { getRMQConfig } from './configs/rmq.config';
+import { MailerModule } from './mailer/mailer.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { getRMQConfig } from './configs/rmq.config';
     AuthModule,
     RMQModule.forRootAsync(getRMQConfig()),
     JwtModule.registerAsync(getJWTConfig()),
+    MailerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
