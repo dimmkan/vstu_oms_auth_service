@@ -6,6 +6,6 @@ export namespace AuthConfirm {
   }
 
   export class Response {
-    access_token: string;
+    success: true;
   }
 }

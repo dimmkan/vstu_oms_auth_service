@@ -4,6 +4,6 @@ export declare namespace AuthConfirm {
         confirm_code: string;
     }
     class Response {
-        access_token: string;
+        success: true;
     }
 }

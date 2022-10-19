@@ -12,9 +12,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
+const sdk_1 = require("@directus/sdk");
+const nestjs_rmq_1 = require("nestjs-rmq");
+const constants_1 = require("nestjs-rmq/dist/constants");
+const random_1 = require("random");
 let AuthService = class AuthService {
     constructor(jwtService) {
         this.jwtService = jwtService;
+        this.directus = new sdk_1.Directus(process.env.DIRECTUS_HOST, {
+            auth: {
+                staticToken: process.env.ADMIN_API_KEY,
+            },
+        });
     }
     login(id) {
         throw new Error('Method not implemented.');
@@ -22,11 +31,44 @@ let AuthService = class AuthService {
     validateUser(email, password) {
         throw new Error('Method not implemented.');
     }
-    confirm(dto) {
-        return new Promise((resolve) => resolve({ access_token: dto.confirm_code }));
+    async confirm(dto) {
+        const confirm_tokens = this.directus.items('confirm_tokens');
+        const confirm_token = await confirm_tokens.readByQuery({
+            filter: { token: dto.confirm_code },
+            fields: 'id,token,payload',
+        }).then(response => response.data.length ? response.data[0] : undefined);
+        if (confirm_token !== undefined) {
+            const users_collection = this.directus.items('users');
+            const user_profiles_collection = this.directus.items('user_profiles');
+            const user = await users_collection.createOne({
+                password: confirm_token.payload.password,
+                email: confirm_token.payload.email,
+                confirmed: true,
+            });
+            await user_profiles_collection.createOne({
+                user_id: user.id,
+                full_name: confirm_token.payload.fullName,
+            });
+            await confirm_tokens.deleteOne(confirm_token.id);
+            return { success: true };
+        }
+        throw new nestjs_rmq_1.RMQError('Неверный код подтверждения', constants_1.ERROR_TYPE.RMQ, 400);
     }
-    register(dto) {
-        throw new Error('Method not implemented.');
+    async register(dto) {
+        const confirm_tokens = this.directus.items('confirm_tokens');
+        const users_collection = this.directus.items('users');
+        const userAlreadyExist = await users_collection.readByQuery({
+            filter: { email: dto.email },
+            fields: 'id',
+        }).then(response => response.data.length);
+        if (userAlreadyExist) {
+            throw new nestjs_rmq_1.RMQError('Пользователь с таким E-mail уже существует!', constants_1.ERROR_TYPE.RMQ, 400);
+        }
+        await confirm_tokens.createOne({
+            token: random_1.default.int(100000, 999999),
+            payload: JSON.stringify(dto),
+        });
+        return { success: true };
     }
 };
 AuthService = __decorate([
