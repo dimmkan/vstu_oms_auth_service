@@ -7,5 +7,5 @@ export declare class AuthController {
     constructor(authService: AuthService);
     register(dto: AuthRegister.Request): Promise<AuthRegister.Response>;
     confirm(dto: AuthConfirm.Request): Promise<AuthConfirm.Response>;
-    login({ email, password }: AuthLogin.Request): Promise<AuthLogin.Response>;
+    login(dto: AuthLogin.Request): Promise<AuthLogin.Response>;
 }

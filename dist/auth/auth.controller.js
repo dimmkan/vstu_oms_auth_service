@@ -29,9 +29,9 @@ let AuthController = class AuthController {
     async confirm(dto) {
         return this.authService.confirm(dto);
     }
-    async login({ email, password }) {
-        const { id } = await this.authService.validateUser(email, password);
-        return this.authService.login(id);
+    async login(dto) {
+        const { id } = await this.authService.validateUser(dto.email, dto.password);
+        return this.authService.login(id, dto.ip, dto.agent);
     }
 };
 __decorate([

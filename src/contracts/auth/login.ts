@@ -9,9 +9,16 @@ export namespace AuthLogin {
 
     @IsString()
     password: string;
+
+    @IsString()
+    ip: string;
+
+    @IsString()
+    agent: string;
   }
 
   export class Response {
     access_token: string;
+    refresh_token: string;
   }
 }

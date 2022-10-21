@@ -24,6 +24,14 @@ var AuthLogin;
         (0, class_validator_1.IsString)(),
         __metadata("design:type", String)
     ], Request.prototype, "password", void 0);
+    __decorate([
+        (0, class_validator_1.IsString)(),
+        __metadata("design:type", String)
+    ], Request.prototype, "ip", void 0);
+    __decorate([
+        (0, class_validator_1.IsString)(),
+        __metadata("design:type", String)
+    ], Request.prototype, "agent", void 0);
     AuthLogin.Request = Request;
     class Response {
     }
