@@ -17,4 +17,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./auth/login"), exports);
 __exportStar(require("./auth/confirm"), exports);
 __exportStar(require("./auth/register"), exports);
+__exportStar(require("./auth/refresh"), exports);
+__exportStar(require("./auth/logout"), exports);
 //# sourceMappingURL=index.js.map

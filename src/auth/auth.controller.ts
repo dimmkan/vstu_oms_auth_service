@@ -1,6 +1,6 @@
 import { Body, Controller } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthLogin } from '../contracts';
+import { AuthLogin, AuthLogout, AuthRefresh } from '../contracts';
 import { AuthRegister } from '../contracts';
 import { AuthConfirm } from '../contracts';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
@@ -30,5 +30,19 @@ export class AuthController {
   async login(@Body() dto: AuthLogin.Request): Promise<AuthLogin.Response> {
     const { id } = await this.authService.validateUser(dto.email, dto.password);
     return this.authService.login(id, dto.ip, dto.agent);
+  }
+
+  @RMQRoute(AuthRefresh.topic)
+  @RMQValidate()
+  async refresh(
+    @Body() dto: AuthRefresh.Request,
+  ): Promise<AuthRefresh.Response> {
+    return this.authService.refresh(dto);
+  }
+
+  @RMQRoute(AuthLogout.topic)
+  @RMQValidate()
+  async logout(@Body() dto: AuthLogout.Request): Promise<AuthLogout.Response> {
+    return this.authService.logout(dto);
   }
 }

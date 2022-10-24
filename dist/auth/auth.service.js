@@ -133,6 +133,38 @@ let AuthService = class AuthService {
         const now_date = new Date().getTime();
         return now_date - token_date > 300000;
     }
+    async refresh(dto) {
+        const refresh_tokens = this.directus.items('refresh_tokens');
+        const current_refresh_token = await refresh_tokens.readByQuery({
+            filter: { key: dto.key },
+        }).then(_.compose(_.omit(['date_created', 'date_updated']), _.head, _.path(['data'])));
+        if (!current_refresh_token) {
+            throw new nestjs_rmq_1.RMQError('Токен не существует!', constants_1.ERROR_TYPE.RMQ, 400);
+        }
+        const key = await (0, nanoid_1.nanoid)(20);
+        const refresh_token = await this.jwtService.sign({ id: dto.id, key }, {
+            expiresIn: process.env.EXPIRE_REFRESH,
+            secret: process.env.JWT_SECRET,
+        });
+        refresh_tokens.updateOne(current_refresh_token.id, Object.assign(Object.assign({}, current_refresh_token), { key, token: refresh_token, expires: refreshTokenExpireDate(), created_by_ip: dto.ip, agent: dto.agent }));
+        const access_token = await this.jwtService.sign({ id: dto.id, rId: current_refresh_token.id }, {
+            expiresIn: process.env.EXPIRE_ACCESS,
+            secret: process.env.JWT_SECRET,
+        });
+        return {
+            access_token,
+            refresh_token,
+        };
+    }
+    async logout(dto) {
+        const refresh_tokens = this.directus.items('refresh_tokens');
+        const current_refresh_token = await refresh_tokens.readOne(dto.rId);
+        if (!current_refresh_token) {
+            return { success: true };
+        }
+        await refresh_tokens.deleteOne(current_refresh_token.id);
+        return { success: true };
+    }
 };
 __decorate([
     (0, schedule_1.Cron)('5 * * * * *'),

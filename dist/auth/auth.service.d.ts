@@ -2,7 +2,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthConfirm } from 'src/contracts/auth/confirm';
 import { AuthRegister } from 'src/contracts/auth/register';
 import { MailerService } from 'src/mailer/mailer.service';
-import { AuthLogin } from '../contracts';
+import { AuthLogin, AuthLogout, AuthRefresh } from '../contracts';
 export declare class AuthService {
     private readonly jwtService;
     private readonly mailerService;
@@ -17,4 +17,6 @@ export declare class AuthService {
     validateUserBeforeRegistry(email: string): Promise<void>;
     deleteUnusedConfirmTokens(): Promise<void>;
     validateConfirmToken(item: any): boolean;
+    refresh(dto: AuthRefresh.Request): Promise<AuthRefresh.Response>;
+    logout(dto: AuthLogout.Request): Promise<AuthLogout.Response>;
 }

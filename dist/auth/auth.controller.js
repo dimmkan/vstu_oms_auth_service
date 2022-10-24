@@ -33,6 +33,12 @@ let AuthController = class AuthController {
         const { id } = await this.authService.validateUser(dto.email, dto.password);
         return this.authService.login(id, dto.ip, dto.agent);
     }
+    async refresh(dto) {
+        return this.authService.refresh(dto);
+    }
+    async logout(dto) {
+        return this.authService.logout(dto);
+    }
 };
 __decorate([
     (0, nestjs_rmq_1.RMQRoute)(contracts_2.AuthRegister.topic),
@@ -58,6 +64,22 @@ __decorate([
     __metadata("design:paramtypes", [contracts_1.AuthLogin.Request]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
+__decorate([
+    (0, nestjs_rmq_1.RMQRoute)(contracts_1.AuthRefresh.topic),
+    (0, nestjs_rmq_1.RMQValidate)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [contracts_1.AuthRefresh.Request]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "refresh", null);
+__decorate([
+    (0, nestjs_rmq_1.RMQRoute)(contracts_1.AuthLogout.topic),
+    (0, nestjs_rmq_1.RMQValidate)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [contracts_1.AuthLogout.Request]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "logout", null);
 AuthController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [auth_service_1.AuthService])
