@@ -102,8 +102,7 @@ export class AuthService {
     ));
 
     if (confirm_token !== undefined) {
-      console.log(confirm_token.email);
-      await this.validateUserBeforeRegistry(confirm_token.email);
+      await this.validateUserBeforeRegistry(confirm_token.payload.email);
       const users_collection = this.directus.items('users');
       const user_profiles_collection = this.directus.items('user_profiles');
       const user = await users_collection.createOne({
