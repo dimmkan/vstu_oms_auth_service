@@ -161,7 +161,7 @@ export class AuthService {
     }
   }
 
-  @Cron('5 * * * * *')
+  @Cron('10 * * * * *')
   async deleteUnusedConfirmTokens() {
     const confirm_tokens = this.directus.items('confirm_tokens');
     const tokens_for_delete = await confirm_tokens.readByQuery({
