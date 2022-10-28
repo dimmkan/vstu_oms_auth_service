@@ -179,7 +179,7 @@ export class AuthService {
   validateConfirmToken(item: any): boolean {
     const token_date = new Date(item.date_created).getTime();
     const now_date = new Date().getTime();
-    return now_date - token_date > 300000;
+    return now_date - token_date > 600000;
   }
 
   async refresh(dto: AuthRefresh.Request): Promise<AuthRefresh.Response> {
