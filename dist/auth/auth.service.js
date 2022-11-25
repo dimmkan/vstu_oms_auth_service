@@ -78,7 +78,7 @@ let AuthService = class AuthService {
             fields: 'id,token,payload',
         }).then(_.compose(_.head, _.path(['data'])));
         if (confirm_token !== undefined) {
-            await this.validateUserBeforeRegistry(confirm_token.email);
+            await this.validateUserBeforeRegistry(confirm_token.payload.email);
             const users_collection = this.directus.items('users');
             const user_profiles_collection = this.directus.items('user_profiles');
             const user = await users_collection.createOne({
@@ -131,7 +131,7 @@ let AuthService = class AuthService {
     validateConfirmToken(item) {
         const token_date = new Date(item.date_created).getTime();
         const now_date = new Date().getTime();
-        return now_date - token_date > 300000;
+        return now_date - token_date > 600000;
     }
     async refresh(dto) {
         const refresh_tokens = this.directus.items('refresh_tokens');
@@ -165,9 +165,129 @@ let AuthService = class AuthService {
         await refresh_tokens.deleteOne(current_refresh_token.id);
         return { success: true };
     }
+    async registerEmployee(dto) {
+        const confirm_tokens = this.directus.items('confirm_tokens');
+        await this.validateEmployeeBeforeRegistry(dto.email);
+        const createdToken = randomNumber({
+            min: 100000,
+            max: 999999,
+            integer: true
+        }).toString();
+        const hash = await bcrypt.hash(dto.password, 10);
+        await confirm_tokens.createOne({
+            token: createdToken,
+            payload: JSON.stringify(Object.assign(Object.assign({}, dto), { password: hash })),
+        });
+        await this.mailerService.sendConfirmation(createdToken, dto.email);
+        return { success: true };
+    }
+    async validateEmployeeBeforeRegistry(email) {
+        const employees_collection = this.directus.items('employees');
+        const employeeAlreadyExist = await employees_collection.readByQuery({
+            filter: { email },
+            fields: 'id',
+        }).then(response => response.data.length);
+        if (employeeAlreadyExist) {
+            throw new nestjs_rmq_1.RMQError('Пользователь с таким E-mail уже существует!', constants_1.ERROR_TYPE.RMQ, 400);
+        }
+    }
+    async confirmEmployee(dto) {
+        const confirm_tokens = this.directus.items('confirm_tokens');
+        const confirm_token = await confirm_tokens.readByQuery({
+            filter: { token: dto.confirm_code },
+            fields: 'id,token,payload',
+        }).then(_.compose(_.head, _.path(['data'])));
+        if (confirm_token !== undefined) {
+            await this.validateEmployeeBeforeRegistry(confirm_token.payload.email);
+            const employees_collection = this.directus.items('employees');
+            const employee_profiles_collection = this.directus.items('employee_profiles');
+            const employee = await employees_collection.createOne({
+                password: confirm_token.payload.password,
+                email: confirm_token.payload.email,
+                confirmed: true,
+            });
+            await employee_profiles_collection.createOne({
+                employee_id: employee.id,
+                full_name: confirm_token.payload.fullName,
+            });
+            await confirm_tokens.deleteOne(confirm_token.id);
+            return { success: true };
+        }
+        throw new nestjs_rmq_1.RMQError('Неверный код подтверждения', constants_1.ERROR_TYPE.RMQ, 400);
+    }
+    async loginEmployee(id, ip, agent) {
+        const key = await (0, nanoid_1.nanoid)(20);
+        const refresh_token = await this.jwtService.sign({ id, key }, {
+            expiresIn: process.env.EXPIRE_REFRESH,
+            secret: process.env.JWT_SECRET,
+        });
+        const refresh_tokens = this.directus.items('employee_refresh_tokens');
+        const new_refresh_obj = refresh_tokens.createOne({
+            employee: id,
+            key,
+            token: refresh_token,
+            expires: refreshTokenExpireDate(),
+            created_by_ip: ip,
+            agent,
+        });
+        const access_token = await this.jwtService.sign({ id, rId: new_refresh_obj.id }, {
+            expiresIn: process.env.EXPIRE_ACCESS,
+            secret: process.env.JWT_SECRET,
+        });
+        return {
+            access_token: access_token,
+            refresh_token: refresh_token,
+        };
+    }
+    async validateEmployee(email, password) {
+        const employees_collection = this.directus.items('employees');
+        const employee = await employees_collection.readByQuery({
+            filter: { email },
+            fields: 'id,password',
+        }).then(_.compose(_.head, _.path(['data'])));
+        if (employee) {
+            const confirm_password = await bcrypt.compare(password, employee.password);
+            if (confirm_password) {
+                return employee;
+            }
+        }
+        throw new nestjs_rmq_1.RMQError('Неверный логин или пароль сотрудника', constants_1.ERROR_TYPE.RMQ, 400);
+    }
+    async refreshEmployee(dto) {
+        const refresh_tokens = this.directus.items('employee_refresh_tokens');
+        const current_refresh_token = await refresh_tokens.readByQuery({
+            filter: { key: dto.key },
+        }).then(_.compose(_.omit(['date_created', 'date_updated']), _.head, _.path(['data'])));
+        if (!current_refresh_token) {
+            throw new nestjs_rmq_1.RMQError('Токен не существует!', constants_1.ERROR_TYPE.RMQ, 400);
+        }
+        const key = await (0, nanoid_1.nanoid)(20);
+        const refresh_token = await this.jwtService.sign({ id: dto.id, key }, {
+            expiresIn: process.env.EXPIRE_REFRESH,
+            secret: process.env.JWT_SECRET,
+        });
+        refresh_tokens.updateOne(current_refresh_token.id, Object.assign(Object.assign({}, current_refresh_token), { key, token: refresh_token, expires: refreshTokenExpireDate(), created_by_ip: dto.ip, agent: dto.agent }));
+        const access_token = await this.jwtService.sign({ id: dto.id, rId: current_refresh_token.id }, {
+            expiresIn: process.env.EXPIRE_ACCESS,
+            secret: process.env.JWT_SECRET,
+        });
+        return {
+            access_token,
+            refresh_token,
+        };
+    }
+    async logoutEmployee(dto) {
+        const refresh_tokens = this.directus.items('employee_refresh_tokens');
+        const current_refresh_token = await refresh_tokens.readOne(dto.rId);
+        if (!current_refresh_token) {
+            return { success: true };
+        }
+        await refresh_tokens.deleteOne(current_refresh_token.id);
+        return { success: true };
+    }
 };
 __decorate([
-    (0, schedule_1.Cron)('5 * * * * *'),
+    (0, schedule_1.Cron)('10 * * * * *'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

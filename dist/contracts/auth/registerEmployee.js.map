@@ -1,0 +1,1 @@
+{"version":3,"file":"registerEmployee.js","sourceRoot":"","sources":["../../../src/contracts/auth/registerEmployee.ts"],"names":[],"mappings":";;;AAAA,IAAiB,oBAAoB,CAYpC;AAZD,WAAiB,oBAAoB;IACtB,0BAAK,GAAG,+BAA+B,CAAC;IAErD,MAAa,OAAO;KAInB;IAJY,4BAAO,UAInB,CAAA;IAED,MAAa,QAAQ;KAEpB;IAFY,6BAAQ,WAEpB,CAAA;AACH,CAAC,EAZgB,oBAAoB,GAApB,4BAAoB,KAApB,4BAAoB,QAYpC"}

@@ -20,7 +20,7 @@ let MailerService = class MailerService {
     async sendConfirmation(createdToken, ToAddress) {
         const htmlText = `
     <h3>Завершение регистрации<h3>
-    Для завершения регистрации аккаунта перейдите по <a href=http://localhost:3000/auth/register/confirm/${createdToken}>ссылке</a>
+    Для завершения регистрации аккаунта перейдите по <a href=${process.env.GATEWAY_HOST}/auth/register/confirm/${createdToken}>ссылке</a>
     `;
         const data = {
             apiKey: process.env.EMAIL_TOKEN,

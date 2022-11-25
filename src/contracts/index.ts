@@ -3,3 +3,8 @@ export * from './auth/confirm';
 export * from './auth/register';
 export * from './auth/refresh';
 export * from './auth/logout';
+export * from './auth/registerEmployee';
+export * from './auth/confirmEmployee';
+export * from './auth/loginEmployee';
+export * from './auth/refreshEmployee';
+export * from './auth/logoutEmployee';

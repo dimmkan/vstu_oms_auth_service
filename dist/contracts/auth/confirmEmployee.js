@@ -9,11 +9,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthConfirm = void 0;
+exports.AuthConfirmEmployee = void 0;
 const class_validator_1 = require("class-validator");
-var AuthConfirm;
-(function (AuthConfirm) {
-    AuthConfirm.topic = 'auth.confirm.command';
+var AuthConfirmEmployee;
+(function (AuthConfirmEmployee) {
+    AuthConfirmEmployee.topic = 'auth.confirmemployee.command';
     class Request {
     }
     __decorate([
@@ -21,9 +21,9 @@ var AuthConfirm;
         (0, class_validator_1.IsNotEmpty)(),
         __metadata("design:type", String)
     ], Request.prototype, "confirm_code", void 0);
-    AuthConfirm.Request = Request;
+    AuthConfirmEmployee.Request = Request;
     class Response {
     }
-    AuthConfirm.Response = Response;
-})(AuthConfirm = exports.AuthConfirm || (exports.AuthConfirm = {}));
-//# sourceMappingURL=confirm.js.map
+    AuthConfirmEmployee.Response = Response;
+})(AuthConfirmEmployee = exports.AuthConfirmEmployee || (exports.AuthConfirmEmployee = {}));
+//# sourceMappingURL=confirmEmployee.js.map

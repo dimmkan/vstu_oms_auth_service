@@ -19,4 +19,9 @@ __exportStar(require("./auth/confirm"), exports);
 __exportStar(require("./auth/register"), exports);
 __exportStar(require("./auth/refresh"), exports);
 __exportStar(require("./auth/logout"), exports);
+__exportStar(require("./auth/registerEmployee"), exports);
+__exportStar(require("./auth/confirmEmployee"), exports);
+__exportStar(require("./auth/loginEmployee"), exports);
+__exportStar(require("./auth/refreshEmployee"), exports);
+__exportStar(require("./auth/logoutEmployee"), exports);
 //# sourceMappingURL=index.js.map

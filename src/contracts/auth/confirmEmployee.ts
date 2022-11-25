@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export namespace AuthConfirm {
-  export const topic = 'auth.confirm.command';
+export namespace AuthConfirmEmployee {
+  export const topic = 'auth.confirmemployee.command';
 
   export class Request {
     @IsString()

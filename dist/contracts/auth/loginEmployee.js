@@ -9,21 +9,32 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthConfirm = void 0;
+exports.AuthLoginEmployee = void 0;
 const class_validator_1 = require("class-validator");
-var AuthConfirm;
-(function (AuthConfirm) {
-    AuthConfirm.topic = 'auth.confirm.command';
+var AuthLoginEmployee;
+(function (AuthLoginEmployee) {
+    AuthLoginEmployee.topic = 'auth.loginemployee.command';
     class Request {
     }
     __decorate([
-        (0, class_validator_1.IsString)(),
-        (0, class_validator_1.IsNotEmpty)(),
+        (0, class_validator_1.IsEmail)(),
         __metadata("design:type", String)
-    ], Request.prototype, "confirm_code", void 0);
-    AuthConfirm.Request = Request;
+    ], Request.prototype, "email", void 0);
+    __decorate([
+        (0, class_validator_1.IsString)(),
+        __metadata("design:type", String)
+    ], Request.prototype, "password", void 0);
+    __decorate([
+        (0, class_validator_1.IsString)(),
+        __metadata("design:type", String)
+    ], Request.prototype, "ip", void 0);
+    __decorate([
+        (0, class_validator_1.IsString)(),
+        __metadata("design:type", String)
+    ], Request.prototype, "agent", void 0);
+    AuthLoginEmployee.Request = Request;
     class Response {
     }
-    AuthConfirm.Response = Response;
-})(AuthConfirm = exports.AuthConfirm || (exports.AuthConfirm = {}));
-//# sourceMappingURL=confirm.js.map
+    AuthLoginEmployee.Response = Response;
+})(AuthLoginEmployee = exports.AuthLoginEmployee || (exports.AuthLoginEmployee = {}));
+//# sourceMappingURL=loginEmployee.js.map

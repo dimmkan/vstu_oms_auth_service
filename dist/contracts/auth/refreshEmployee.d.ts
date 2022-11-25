@@ -1,5 +1,5 @@
-export declare namespace AuthRefresh {
-    const topic = "auth.refresh.command";
+export declare namespace AuthRefreshEmployee {
+    const topic = "auth.refreshemployee.command";
     class Request {
         id: number;
         key: string;
