@@ -256,7 +256,7 @@ export class AuthService {
       }),
     });
 
-    await this.mailerService.sendConfirmation(createdToken, dto.email)
+    await this.mailerService.sendConfirmationEmployee(createdToken, dto.email)
 
     return { success: true };
   }
